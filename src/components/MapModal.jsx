@@ -1,18 +1,42 @@
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import Map from "../api/Map";
 
 const MapModal = ({ category }) => {
+  const searchKeywordRef = useRef();
+  const [keyword, setKeyword] = useState("");
+  const searching = () => {
+    setKeyword(searchKeywordRef.current.value);
+    searchKeywordRef.current.value = "";
+  };
+
   return (
-    <MapBox>
-      <p>{category}</p>
-      <Map />
-    </MapBox>
+    <Section>
+      <MapBox>
+        <p>{category}</p>
+        <Map searchPlace={keyword} />
+      </MapBox>
+      <DesSection>
+        <input ref={searchKeywordRef} type="text" />
+        <button onClick={searching}>찾기</button>
+      </DesSection>
+    </Section>
   );
 };
 export default MapModal;
 
+const Section = styled.section`
+  min-width: 900px;
+  display: flex;
+`;
 const MapBox = styled.div`
   width: 500px;
+  height: 500px;
+
+  background-color: gray;
+`;
+const DesSection = styled.div`
+  width: 400px;
   height: 500px;
 
   background-color: gray;

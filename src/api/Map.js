@@ -1,10 +1,14 @@
 import React, { useEffect } from "react";
-
+import { savedata } from "../redux/kakaomapSlice";
+import { useDispatch } from "react-redux/es/exports";
 const { kakao } = window;
 
 const Map = ({ searchPlace }) => {
+  const dispatch = useDispatch();
+
   const saveBtn = (place) => {
     const address = place.address_name;
+    dispatch(savedata(address));
     console.log(address);
   };
 

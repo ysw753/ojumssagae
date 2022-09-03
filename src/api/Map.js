@@ -1,9 +1,16 @@
 import React, { useEffect } from "react";
 
 const { kakao } = window;
+
 const Map = ({ searchPlace }) => {
+  const saveBtn = (place) => {
+    const address = place.address_name;
+    console.log(address);
+  };
+
   useEffect(() => {
     const container = document.getElementById("map");
+    let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     const options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
       level: 3,
@@ -31,6 +38,19 @@ const Map = ({ searchPlace }) => {
       let marker = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(place.y, place.x),
+      });
+      kakao.maps.event.addListener(marker, "click", function () {
+        // 마커를 클릭하면 장소명이 인포윈도우에 표출
+        console.log(place);
+
+        infowindow.setContent(
+          '<div style="padding:5px;font-size:12px;">' +
+            place.place_name +
+            `<button type="button" id="clickMe">저장</button>` +
+            "</div>"
+        );
+        infowindow.open(map, marker);
+        document.getElementById("clickMe").onclick = () => saveBtn(place);
       });
     }
   }, [searchPlace]);

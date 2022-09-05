@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
 import Map from "../api/Map";
+import Mymap from "../api/Mymap";
 
 const MapModal = ({ category }) => {
   const searchKeywordRef = useRef();
@@ -11,16 +12,19 @@ const MapModal = ({ category }) => {
   };
 
   return (
-    <Section>
-      <MapBox>
-        <p>{category}</p>
-        <Map searchPlace={keyword} />
-      </MapBox>
-      <DesSection>
-        <input ref={searchKeywordRef} type="text" />
-        <button onClick={searching}>찾기</button>
-      </DesSection>
-    </Section>
+    <>
+      <Section>
+        <MapBox>
+          <p>{category}</p>
+          <Map searchPlace={keyword} />
+        </MapBox>
+        <DesSection>
+          <input ref={searchKeywordRef} type="text" />
+          <button onClick={searching}>찾기</button>
+        </DesSection>
+      </Section>
+      <Mymap />
+    </>
   );
 };
 export default MapModal;

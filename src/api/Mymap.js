@@ -1,42 +1,29 @@
 import React, { useEffect } from "react";
-import { savedata } from "../redux/kakaomapSlice";
-import { useDispatch } from "react-redux/es/exports";
+import { useSelector } from "react-redux/es/exports";
 const { kakao } = window;
 
-const Map = ({ searchPlace }) => {
-  const dispatch = useDispatch();
-
-  const saveBtn = (place) => {
-    dispatch(savedata(place));
-    console.log(place);
+const Mymap = () => {
+  const placeArr = useSelector((state) => {
+    return state.place.value;
+  });
+  console.log(placeArr);
+  const saveBtn = () => {
+    console.log("저장된 지역을 보여주세요");
   };
 
   useEffect(() => {
-    const container = document.getElementById("map");
+    const container = document.getElementById("mymap");
     let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     const options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
       level: 3,
     };
     const map = new kakao.maps.Map(container, options);
-
-    const ps = new kakao.maps.services.Places();
-
-    ps.keywordSearch(searchPlace, placesSearchCB);
-
-    function placesSearchCB(data, status, pagination) {
-      if (status === kakao.maps.services.Status.OK) {
-        let bounds = new kakao.maps.LatLngBounds();
-
-        for (let i = 0; i < data.length; i++) {
-          displayMarker(data[i]);
-          bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-        }
-
-        map.setBounds(bounds);
+    function places(placeArr) {
+      for (let i = 0; i < placeArr.length; i++) {
+        displayMarker(placeArr[i]);
       }
     }
-
     function displayMarker(place) {
       let marker = new kakao.maps.Marker({
         map: map,
@@ -49,20 +36,20 @@ const Map = ({ searchPlace }) => {
         infowindow.setContent(
           '<div style="padding:5px;font-size:12px;">' +
             place.place_name +
-            `<button type="button" id="clickMe">저장</button>` +
             "</div>"
         );
         infowindow.open(map, marker);
         document.getElementById("clickMe").onclick = () => saveBtn(place);
       });
     }
-  }, [searchPlace]);
+    places(placeArr);
+  }, [placeArr]);
 
   return (
     <div>
-      <div id="map" style={{ width: "500px", height: "400px" }}></div>
+      <div id="mymap" style={{ width: "500px", height: "400px" }}></div>
     </div>
   );
 };
 
-export default Map;
+export default Mymap;

@@ -5,8 +5,7 @@ const kakaomapSlice = createSlice({
   reducers: {
     savedata: (state, action) => {
       console.log(action.payload);
-      state.value.push(action.payload);
-      return state;
+      state.value = [...state.value, action.payload];
     },
   },
 });

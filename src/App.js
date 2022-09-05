@@ -5,10 +5,10 @@ import { Provider, useSelector } from "react-redux";
 import store from "./redux/store";
 
 function App() {
-  const address = useSelector((state) => {
-    return state.address.value;
+  const place = useSelector((state) => {
+    return state.place.value;
   });
-  console.log(address);
+  console.log(place);
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />

@@ -1,0 +1,12 @@
+#infoBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#clickMe {
+  cursor: pointer;
+  background-color: white;
+}
+#clickMe:hover {
+  background-color: rgb(235, 247, 207);
+}

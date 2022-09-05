@@ -7,9 +7,6 @@ const Mymap = () => {
     return state.place.value;
   });
   console.log(placeArr);
-  const saveBtn = () => {
-    console.log("저장된 지역을 보여주세요");
-  };
 
   useEffect(() => {
     const container = document.getElementById("mymap");
@@ -21,10 +18,12 @@ const Mymap = () => {
     const map = new kakao.maps.Map(container, options);
     function places(placeArr) {
       for (let i = 0; i < placeArr.length; i++) {
-        displayMarker(placeArr[i]);
+        displayMarker(placeArr[i].place, placeArr[i].contents);
+        console.log(placeArr[i]);
       }
     }
-    function displayMarker(place) {
+
+    function displayMarker(place, contents) {
       let marker = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(place.y, place.x),
@@ -34,20 +33,20 @@ const Mymap = () => {
         console.log(place);
 
         infowindow.setContent(
-          '<div style="padding:5px;font-size:12px;">' +
-            place.place_name +
-            "</div>"
+          `
+          <div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
+            <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>`
         );
         infowindow.open(map, marker);
-        document.getElementById("clickMe").onclick = () => saveBtn(place);
       });
     }
+
     places(placeArr);
   }, [placeArr]);
 
   return (
     <div>
-      <div id="mymap" style={{ width: "500px", height: "400px" }}></div>
+      <div id="mymap" style={{ width: "100%", height: "600px" }}></div>
     </div>
   );
 };

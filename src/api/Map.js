@@ -1,14 +1,24 @@
-import React, { useEffect } from "react";
-import { savedata } from "../redux/kakaomapSlice";
+import React, { useEffect, useState } from "react";
+import { saveContents, saveplace, savedata } from "../redux/kakaomapSlice";
 import { useDispatch } from "react-redux/es/exports";
+import "./Map.css";
+import AddModal from "../components/AddModal";
 const { kakao } = window;
 
-const Map = ({ searchPlace }) => {
+const Map = ({ searchPlace, closeSearchHandler }) => {
+  const [record, setRecord] = useState(false);
   const dispatch = useDispatch();
-
-  const saveBtn = (place) => {
-    dispatch(savedata(place));
+  const [clickedPlace, setClicekedPlace] = useState();
+  const recordBtn = (place) => {
+    setRecord(true);
     console.log(place);
+    setClicekedPlace(place);
+  };
+  const closeAddModal = () => {
+    if (window.confirm("저장하시겠습니까?")) {
+      setRecord(false);
+      closeSearchHandler();
+    }
   };
 
   useEffect(() => {
@@ -44,23 +54,25 @@ const Map = ({ searchPlace }) => {
       });
       kakao.maps.event.addListener(marker, "click", function () {
         // 마커를 클릭하면 장소명이 인포윈도우에 표출
-        console.log(place);
 
         infowindow.setContent(
-          '<div style="padding:5px;font-size:12px;">' +
+          '<div id="infoBox" style="padding:5px;font-size:12px; display:flex;">' +
             place.place_name +
-            `<button type="button" id="clickMe">저장</button>` +
+            `<button type="button" id="clickMe" style="width:60px; ">기록</button>` +
             "</div>"
         );
         infowindow.open(map, marker);
-        document.getElementById("clickMe").onclick = () => saveBtn(place);
+        document.getElementById("clickMe").onclick = () => recordBtn(place);
       });
     }
   }, [searchPlace]);
 
   return (
-    <div>
-      <div id="map" style={{ width: "500px", height: "400px" }}></div>
+    <div style={{ postion: "relative" }}>
+      <div id="map" style={{ width: "650px", height: "650px" }}></div>
+      {record && (
+        <AddModal clickedPlace={clickedPlace} closeAddModal={closeAddModal} />
+      )}
     </div>
   );
 };

@@ -14,7 +14,7 @@ const MainPage = () => {
     setIsOpenModal(true);
   };
   return (
-    <>
+    <Window>
       <Header />
       <CategorySection selectedViewHandler={selectedViewHandler} />
       <ViewSection category={category} />
@@ -25,13 +25,16 @@ const MainPage = () => {
           <p>what do you want it?</p>
         )}
       </View>
-    </>
+    </Window>
   );
 };
 
 export default MainPage;
+const Window = styled.div`
+  min-width: 1200px;
+`;
 
 const View = styled.div`
-  width: 50%;
+  width: 100%;
   margin: auto;
 `;

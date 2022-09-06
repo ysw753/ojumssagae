@@ -32,7 +32,7 @@ const Form = styled.form`
   top: 0px;
   right: 0px;
   width: 310px;
-  height: 650px;
+  height: 100%;
   background-color: yellow;
   textarea {
     width: 100%;

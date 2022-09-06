@@ -1,12 +1,20 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux/es/exports";
+import { useDispatch, useSelector } from "react-redux/es/exports";
+import { deletedata } from "../redux/kakaomapSlice";
 const { kakao } = window;
 
 const Mymap = () => {
+  const dispatch = useDispatch();
   const placeArr = useSelector((state) => {
     return state.place.value;
   });
   console.log(placeArr);
+
+  const deleteBtn = (place) => {
+    console.log("delete");
+    const id = place.id;
+    dispatch(deletedata(id));
+  };
 
   useEffect(() => {
     const container = document.getElementById("mymap");
@@ -35,9 +43,16 @@ const Mymap = () => {
         infowindow.setContent(
           `
           <div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
-            <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>`
+            <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>
+            <button id="update">수정</button>
+            <button id="${place.id}">삭제</button>
+            `
         );
         infowindow.open(map, marker);
+        //document.getElementById("delete").onclick = () => deleteBtn(place);
+        document
+          .getElementById(place.id)
+          .addEventListener("click", () => deleteBtn(place));
       });
     }
 

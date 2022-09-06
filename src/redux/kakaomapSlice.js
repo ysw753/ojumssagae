@@ -7,6 +7,13 @@ const kakaomapSlice = createSlice({
       console.log(action.payload);
       state.value.push(action.payload);
     },
+    deletedata: (state, action) => {
+      const id = action.payload;
+      console.log(action.payload);
+      const findplaceArr = state.value.filter((i) => i.place.id !== id);
+      console.log(findplaceArr);
+      state.value = findplaceArr;
+    },
     // savePlace: (state, action) => {
     //   console.log(action.payload);
     //   state.value.push(action.payload);
@@ -17,4 +24,5 @@ const kakaomapSlice = createSlice({
   },
 });
 export default kakaomapSlice;
-export const { saveplace, saveContents, savedata } = kakaomapSlice.actions;
+export const { saveplace, saveContents, savedata, deletedata } =
+  kakaomapSlice.actions;

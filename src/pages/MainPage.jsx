@@ -32,6 +32,7 @@ const MainPage = () => {
 export default MainPage;
 const Window = styled.div`
   min-width: 1200px;
+  padding-bottom: 50px;
 `;
 
 const View = styled.div`

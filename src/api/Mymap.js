@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux/es/exports";
+import AddModal from "../components/AddModal";
 import { deletedata } from "../redux/kakaomapSlice";
 const { kakao } = window;
 
 const Mymap = () => {
   const dispatch = useDispatch();
+  const [updateState, setUpdateState] = useState(false);
   const placeArr = useSelector((state) => {
     return state.place.value;
   });
@@ -14,6 +16,11 @@ const Mymap = () => {
     console.log("delete");
     const id = place.id;
     dispatch(deletedata(id));
+  };
+
+  const updateBtn = (place) => {
+    setUpdateState(place);
+    console.log("update");
   };
 
   useEffect(() => {
@@ -27,7 +34,6 @@ const Mymap = () => {
     function places(placeArr) {
       for (let i = 0; i < placeArr.length; i++) {
         displayMarker(placeArr[i].place, placeArr[i].contents);
-        console.log(placeArr[i]);
       }
     }
 
@@ -44,15 +50,21 @@ const Mymap = () => {
           `
           <div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
             <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>
-            <button id="update">수정</button>
-            <button id="${place.id}">삭제</button>
+            <button id="${place.id + "update"}">수정</button>
+            <button id="${place.id}">삭제</button>         
             `
         );
         infowindow.open(map, marker);
         //document.getElementById("delete").onclick = () => deleteBtn(place);
-        document
-          .getElementById(place.id)
-          .addEventListener("click", () => deleteBtn(place));
+        const deleteUpdate = (place) => {
+          document
+            .getElementById(place.id)
+            .addEventListener("click", () => deleteBtn(place));
+          document
+            .getElementById(place.id + "update")
+            .addEventListener("click", () => updateBtn(place));
+        };
+        deleteUpdate(place);
       });
     }
 
@@ -60,8 +72,15 @@ const Mymap = () => {
   }, [placeArr]);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <div id="mymap" style={{ width: "100%", height: "600px" }}></div>
+      {!!updateState && (
+        <AddModal
+          clickedPlace={updateState}
+          closeAddModal={() => setUpdateState(false)}
+          style={{ position: "absolute", right: "0px" }}
+        />
+      )}
     </div>
   );
 };

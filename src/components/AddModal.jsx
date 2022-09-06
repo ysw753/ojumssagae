@@ -19,7 +19,7 @@ const AddModal = ({ clickedPlace, closeAddModal }) => {
   return (
     <Form onSubmit={submitHandler}>
       <h1>추억을 저장해주세요!</h1>
-      <textarea ref={textRef} placeholder="메모" />
+      <textarea ref={textRef} placeholder={"추억을 저장해주세요!"} />
       <button type="submit">저장하기</button>
     </Form>
   );

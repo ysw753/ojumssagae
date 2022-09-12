@@ -26,11 +26,21 @@ const Mymap = () => {
   useEffect(() => {
     const container = document.getElementById("mymap");
     let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    let x = 127.10676860117488;
+    let y = 37.365264512305174;
+    if (placeArr.length !== 0) {
+      x = placeArr[placeArr.length - 1].place.x;
+      y = placeArr[placeArr.length - 1].place.y;
+    } else {
+      x = 127.10676860117488;
+      y = 37.365264512305174;
+    }
     const options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(y, x),
       level: 3,
     };
     const map = new kakao.maps.Map(container, options);
+
     function places(placeArr) {
       for (let i = 0; i < placeArr.length; i++) {
         displayMarker(placeArr[i].place, placeArr[i].contents);
@@ -42,30 +52,36 @@ const Mymap = () => {
         map: map,
         position: new kakao.maps.LatLng(place.y, place.x),
       });
-      kakao.maps.event.addListener(marker, "click", function () {
-        // 마커를 클릭하면 장소명이 인포윈도우에 표출
-        console.log(place);
+      kakao.maps.event.addListener(
+        marker,
+        "click",
+        (function () {
+          return function () {
+            // 마커를 클릭하면 장소명이 인포윈도우에 표출
+            console.log(place);
 
-        infowindow.setContent(
-          `
-          <div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
+            infowindow.setContent(
+              `<div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
             <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>
-            <button id="${place.id + "update"}">수정</button>
-            <button id="${place.id}">삭제</button>         
-            `
-        );
-        infowindow.open(map, marker);
-        //document.getElementById("delete").onclick = () => deleteBtn(place);
-        const deleteUpdate = (place) => {
-          document
-            .getElementById(place.id)
-            .addEventListener("click", () => deleteBtn(place));
-          document
-            .getElementById(place.id + "update")
-            .addEventListener("click", () => updateBtn(place));
-        };
-        deleteUpdate(place);
-      });
+            
+            <button id="${place.id}">삭제</button>`
+            );
+            infowindow.open(map, marker);
+            //document.getElementById("delete").onclick = () => deleteBtn(place);
+            const deleteUpdate = (place) => {
+              return (function () {
+                document
+                  .getElementById(place.id)
+                  .addEventListener("click", () => deleteBtn(place));
+                document
+                  .getElementById(place.id + "update")
+                  .addEventListener("click", () => updateBtn(place));
+              })();
+            };
+            deleteUpdate(place);
+          };
+        })()
+      );
     }
 
     places(placeArr);

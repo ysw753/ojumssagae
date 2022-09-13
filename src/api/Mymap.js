@@ -6,7 +6,9 @@ const { kakao } = window;
 
 const Mymap = () => {
   const dispatch = useDispatch();
+  //const [map, setKakaomap] = useState();
   const [updateState, setUpdateState] = useState(false);
+  const [dot, setDot] = useState([127.10676860117488, 37.365264512305174]);
   const placeArr = useSelector((state) => {
     return state.place.value;
   });
@@ -22,24 +24,35 @@ const Mymap = () => {
     setUpdateState(place);
     console.log("update");
   };
-
+  let map;
   useEffect(() => {
+    const options = {
+      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      level: 3,
+    };
     const container = document.getElementById("mymap");
+    map = new kakao.maps.Map(container, options);
+  }, []);
+  useEffect(() => {
     let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     let x = 127.10676860117488;
     let y = 37.365264512305174;
     if (placeArr.length !== 0) {
       x = placeArr[placeArr.length - 1].place.x;
       y = placeArr[placeArr.length - 1].place.y;
+      setDot([x, y]);
     } else {
-      x = 127.10676860117488;
-      y = 37.365264512305174;
+      x = dot[0];
+      y = dot[1];
     }
-    const options = {
-      center: new kakao.maps.LatLng(y, x),
-      level: 3,
-    };
-    const map = new kakao.maps.Map(container, options);
+    map?.setCenter(new kakao.maps.LatLng(y, x));
+
+    // const options = {
+    //   center: new kakao.maps.LatLng(y, x),
+    //   level: 3,
+    // };
+    // const container = document.getElementById("mymap");
+    // const map = new kakao.maps.Map(container, options);
 
     function places(placeArr) {
       for (let i = 0; i < placeArr.length; i++) {
@@ -59,7 +72,9 @@ const Mymap = () => {
           return function () {
             // 마커를 클릭하면 장소명이 인포윈도우에 표출
             console.log(place);
-
+            if (infowindow.getMap()) {
+              infowindow.close();
+            }
             infowindow.setContent(
               `<div style="padding:5px;font-size:12px;"> ${place.place_name}</div> 
             <div style="word-break:break-all; overflow:auto; display: table; ">${contents}</div>
@@ -73,9 +88,9 @@ const Mymap = () => {
                 document
                   .getElementById(place.id)
                   .addEventListener("click", () => deleteBtn(place));
-                document
-                  .getElementById(place.id + "update")
-                  .addEventListener("click", () => updateBtn(place));
+                // document
+                //   .getElementById(place.id + "update")
+                //   .addEventListener("click", () => updateBtn(place));
               })();
             };
             deleteUpdate(place);

@@ -10,7 +10,9 @@ const kakaomapSlice = createSlice({
     deletedata: (state, action) => {
       const id = action.payload;
       console.log(action.payload);
-      const findplaceArr = state.value.filter((i) => i.place.id !== id);
+      const findplaceArr = state.value.filter(
+        (i) => i.place.position.lat !== id.place.position.lat
+      );
       console.log(findplaceArr);
       state.value = findplaceArr;
     },

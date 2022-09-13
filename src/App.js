@@ -3,6 +3,7 @@ import MainPage from "./pages/MainPage";
 import { Route, Routes } from "react-router-dom";
 import { Provider, useSelector } from "react-redux";
 import store from "./redux/store";
+import Home from "./pages/Home";
 
 function App() {
   const place = useSelector((state) => {
@@ -11,7 +12,8 @@ function App() {
   console.log(place);
   return (
     <Routes>
-      <Route path="/" element={<MainPage />} />
+      {/* <Route path="/" element={<MainPage />} /> */}
+      <Route path="/" element={<Home />} />
     </Routes>
   );
 }

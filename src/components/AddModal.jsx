@@ -3,17 +3,17 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { savedata } from "../redux/kakaomapSlice";
 
-const AddModal = ({ clickedPlace, closeAddModal }) => {
-  const textRef = useRef();
-  console.log(clickedPlace);
+const AddModal = ({ setIsSearching, setIsOpenModal, info }) => {
   const dispatch = useDispatch();
+  const textRef = useRef();
+
   const submitHandler = (e) => {
     e.preventDefault();
     const contents = textRef.current.value;
-
-    const obj = { place: clickedPlace, contents: contents };
+    const obj = { place: info, contents: contents };
     dispatch(savedata(obj));
-    closeAddModal();
+    setIsOpenModal(false);
+    setIsSearching(false);
   };
 
   return (

@@ -25,7 +25,7 @@ const Map = ({ searchPlace, closeSearchHandler }) => {
     const container = document.getElementById("map");
     let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     const options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(37.4811, 126.9716),
       level: 3,
     };
     const map = new kakao.maps.Map(container, options);
@@ -42,7 +42,6 @@ const Map = ({ searchPlace, closeSearchHandler }) => {
           displayMarker(data[i]);
           bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
         }
-
         map.setBounds(bounds);
       }
     }
@@ -70,6 +69,7 @@ const Map = ({ searchPlace, closeSearchHandler }) => {
   return (
     <div style={{ postion: "relative" }}>
       <div id="map" style={{ width: "650px", height: "650px" }}></div>
+
       {record && (
         <AddModal clickedPlace={clickedPlace} closeAddModal={closeAddModal} />
       )}

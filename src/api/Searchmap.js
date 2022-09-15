@@ -14,22 +14,27 @@ const SearchMap = () => {
   const [map, setMap] = useState();
   const [isOpen, setIsOpen] = useState(false);
 
+  const [update, setUpdate] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const inputRef = useRef();
+
+  //const inputRef = useRef();
   const [place, setPlace] = useState();
 
   const [isSearching, setIsSearching] = useState(false);
 
   const [selectedMarker, setSeleteMarker] = useState(false);
-
+  const [inputstate, setInputState] = useState("");
   const placeArr = useSelector((state) => {
     return state.place.value;
   });
-
+  const inputChange = (e) => {
+    setInputState(e.currentTarget.value);
+  };
   const search = () => {
-    console.log(inputRef.current.value);
-    setPlace(inputRef.current.value);
+    //console.log(inputRef.current.value);
+    setPlace(inputstate);
     setIsSearching(true);
+    setInputState("");
   };
   const clickHandler = (marker) => {
     setInfo(marker);
@@ -44,6 +49,11 @@ const SearchMap = () => {
     console.log(marker);
     dispatch(deletedata(marker));
   };
+  const updateBtn = (marker) => {
+    setUpdate(marker);
+    setIsOpenModal(true);
+  };
+
   useEffect(() => {
     if (!map) return;
     const ps = new kakao.maps.services.Places();
@@ -141,6 +151,7 @@ const SearchMap = () => {
               {selectedMarker &&
                 selectedMarker.place.content === place.place.content && (
                   <Custom>
+                    <div style={{ color: "#000" }}>{place.place.content}</div>
                     <img
                       alt="close"
                       width="14"
@@ -161,8 +172,9 @@ const SearchMap = () => {
                       }}
                       src="https://cdn.pixabay.com/photo/2016/05/25/10/43/hamburger-1414423_960_720.jpg"
                     />
-                    <div style={{ color: "#000" }}>{place.place.content}</div>
+                    <p>{place.contents}</p>
                     <button onClick={() => deleteBtn(place)}>삭제</button>
+                    <button onClick={() => updateBtn(place)}>수정</button>
                   </Custom>
                 )}
             </MapMarker>
@@ -173,11 +185,13 @@ const SearchMap = () => {
             setIsSearching={setIsSearching}
             setIsOpenModal={setIsOpenModal}
             info={info}
+            update={update}
+            setUpdate={setUpdate}
           />
         )}
       </Map>
 
-      <input ref={inputRef} />
+      <input onChange={inputChange} value={inputstate} />
       <button onClick={search}>찾기</button>
     </>
   );

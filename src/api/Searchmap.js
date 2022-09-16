@@ -170,7 +170,7 @@ const SearchMap = () => {
                         width: "150px",
                         height: "100px",
                       }}
-                      src="https://cdn.pixabay.com/photo/2016/05/25/10/43/hamburger-1414423_960_720.jpg"
+                      src={place.imageUrl}
                     />
                     <p>{place.contents}</p>
                     <button onClick={() => deleteBtn(place)}>삭제</button>

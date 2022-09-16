@@ -13,7 +13,7 @@ const AddModal = ({
   console.log(update);
   const dispatch = useDispatch();
   const textRef = useRef();
-  const [myImages, setMyImages] = useState([]);
+  const [attachment, setAttachment] = useState();
   const [url, setUrl] = useState();
   const [textarea, setTextArea] = useState(update?.contents);
 
@@ -21,8 +21,8 @@ const AddModal = ({
     e.preventDefault();
 
     const contents = textRef.current.value;
-
-    const obj = { place: info, contents: contents };
+    const image = attachment;
+    const obj = { place: info, contents: contents, imageUrl: image };
 
     dispatch(savedata(obj));
     setIsOpenModal(false);
@@ -31,13 +31,23 @@ const AddModal = ({
   };
   const updateHandler = () => {
     const contents = textRef.current.value;
-    const obj = { place: update?.place, contents: contents };
+    const obj = {
+      place: update?.place,
+      contents: contents,
+      imageUrl: attachment,
+    };
     dispatch(updatedata(obj));
     setIsOpenModal(false);
     setUpdate(() => []);
   };
-  const onLoadFile = (e) => {
-    setMyImages(e.target.files);
+  const onFileChange = (event) => {
+    const theFile = event.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent) => {
+      const result = finishedEvent.currentTarget.result;
+      setAttachment(result);
+    };
+    reader.readAsDataURL(theFile);
   };
   const cancelBtn = () => {
     setIsOpenModal(false);
@@ -46,6 +56,11 @@ const AddModal = ({
   const changeHandler = (e) => {
     setTextArea(e.target.value);
   };
+
+  const onClearAttachment = () => {
+    setAttachment(null);
+  };
+
   return (
     <>
       <Form onSubmit={submitHandler}>
@@ -58,11 +73,16 @@ const AddModal = ({
         />
         <input
           type="file"
-          accept="img/*"
-          multiple
+          accept="image/*"
           name="file"
-          onChange={onLoadFile}
+          onChange={onFileChange}
         />
+        {attachment && (
+          <div>
+            <img src={attachment} width="50px" height="50px" />
+            <button onClick={onClearAttachment}>Clear</button>
+          </div>
+        )}
         {update.length !== 0 ? (
           <button type="submit" onClick={updateHandler}>
             수정하기

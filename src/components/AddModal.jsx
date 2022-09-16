@@ -2,40 +2,63 @@ import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { savedata, updatedata } from "../redux/kakaomapSlice";
-
+import { db } from "../shared/firebase";
+import { uid } from "uid";
+import { set, ref, update } from "firebase/database";
 const AddModal = ({
   setIsSearching,
   setIsOpenModal,
   info,
-  update,
+  updated,
   setUpdate,
 }) => {
-  console.log(update);
   const dispatch = useDispatch();
   const textRef = useRef();
   const [attachment, setAttachment] = useState();
-  const [url, setUrl] = useState();
-  const [textarea, setTextArea] = useState(update?.contents);
-
+  const [textarea, setTextArea] = useState(updated?.contents);
+  console.log(updated.uuid);
   const submitHandler = (e) => {
     e.preventDefault();
 
     const contents = textRef.current.value;
+    if (attachment == undefined) {
+      setAttachment("");
+    }
+    console.log(attachment);
     const image = attachment;
-    const obj = { place: info, contents: contents, imageUrl: image };
+    const uuid = uid();
+    const obj = {
+      place: info,
+      contents: contents,
+      imageUrl: image,
+      uuid: uuid,
+    };
 
+    set(ref(db, `/${uuid}`), {
+      placeData: obj,
+      uuid: uuid,
+    }).then(console.log("서버저장완료"));
     dispatch(savedata(obj));
     setIsOpenModal(false);
     setIsSearching(false);
-    console.log(obj);
   };
   const updateHandler = () => {
     const contents = textRef.current.value;
+    const image = attachment;
+    if (attachment == undefined) {
+      setAttachment("");
+    }
     const obj = {
-      place: update?.place,
+      place: updated?.place,
       contents: contents,
-      imageUrl: attachment,
+      imageUrl: image,
+      uuid: updated.uuid,
     };
+
+    update(ref(db, `/${updated.uuid}`), {
+      placeData: obj,
+      uuid: updated.uuid,
+    }).then(console.log("서버업데이트 완료"));
     dispatch(updatedata(obj));
     setIsOpenModal(false);
     setUpdate(() => []);
@@ -83,8 +106,8 @@ const AddModal = ({
             <button onClick={onClearAttachment}>Clear</button>
           </div>
         )}
-        {update.length !== 0 ? (
-          <button type="submit" onClick={updateHandler}>
+        {updated.length !== 0 ? (
+          <button type="button" onClick={updateHandler}>
             수정하기
           </button>
         ) : (

@@ -3,8 +3,9 @@ import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useEffect, useRef, useState } from "react";
 import AddModal from "../components/AddModal";
 import { useDispatch, useSelector } from "react-redux";
-import { deletedata } from "../redux/kakaomapSlice";
-
+import { deletedata, savedata } from "../redux/kakaomapSlice";
+import { onValue, ref, remove } from "firebase/database";
+import { db } from "../shared/firebase";
 const { kakao } = window;
 
 const SearchMap = () => {
@@ -14,7 +15,7 @@ const SearchMap = () => {
   const [map, setMap] = useState();
   const [isOpen, setIsOpen] = useState(false);
 
-  const [update, setUpdate] = useState([]);
+  const [updated, setUpdate] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   //const inputRef = useRef();
@@ -48,12 +49,23 @@ const SearchMap = () => {
   const deleteBtn = (marker) => {
     console.log(marker);
     dispatch(deletedata(marker));
+    remove(ref(db, `/${marker.uuid}`));
   };
   const updateBtn = (marker) => {
     setUpdate(marker);
     setIsOpenModal(true);
   };
-
+  useEffect(() => {
+    onValue(ref(db), (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      if (data !== null) {
+        Object.values(data).map((place) => {
+          dispatch(savedata(place.placeData));
+        });
+      }
+    });
+  }, []);
   useEffect(() => {
     if (!map) return;
     const ps = new kakao.maps.services.Places();
@@ -165,13 +177,16 @@ const SearchMap = () => {
                       }}
                       onClick={() => setSeleteMarker(null)}
                     />
-                    <img
-                      style={{
-                        width: "150px",
-                        height: "100px",
-                      }}
-                      src={place.imageUrl}
-                    />
+                    {place.imageUrl && (
+                      <img
+                        style={{
+                          width: "150px",
+                          height: "100px",
+                        }}
+                        src={place.imageUrl}
+                      />
+                    )}
+
                     <p>{place.contents}</p>
                     <button onClick={() => deleteBtn(place)}>삭제</button>
                     <button onClick={() => updateBtn(place)}>수정</button>
@@ -185,7 +200,7 @@ const SearchMap = () => {
             setIsSearching={setIsSearching}
             setIsOpenModal={setIsOpenModal}
             info={info}
-            update={update}
+            updated={updated}
             setUpdate={setUpdate}
           />
         )}

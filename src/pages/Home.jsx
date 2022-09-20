@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { useEffect } from "react";
-import SavedMap from "../api/SavedMap";
 import SearchMap from "../api/Searchmap";
 import AddModal from "../components/AddModal";
 
@@ -13,9 +12,7 @@ const Home = () => {
   };
   return (
     <>
-      <SearchMap savefnc={savefnc} />
-      <h1>추억이 저장된 공간</h1>
-      <SavedMap />
+      <SearchMap savefnc={savefnc} key={1} />
       {openModal && <AddModal place={place} setOpenModal={setOpenModal} />}
     </>
   );

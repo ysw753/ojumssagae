@@ -3,6 +3,12 @@ const kakaomapSlice = createSlice({
   name: "kakaomapSlice",
   initialState: { value: [] },
   reducers: {
+    initdata: (state) => {
+      state.value = [];
+    },
+    fetchdata: (state) => {
+      return state;
+    },
     savedata: (state, action) => {
       console.log(action.payload);
       state.value.push(action.payload);
@@ -30,4 +36,5 @@ const kakaomapSlice = createSlice({
   },
 });
 export default kakaomapSlice;
-export const { savedata, deletedata, updatedata } = kakaomapSlice.actions;
+export const { fetchdata, initdata, savedata, deletedata, updatedata } =
+  kakaomapSlice.actions;

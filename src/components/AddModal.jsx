@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { savedata, updatedata } from "../redux/kakaomapSlice";
 import { db } from "../shared/firebase";
 import { uid } from "uid";
 import { set, ref, update } from "firebase/database";
@@ -11,23 +9,20 @@ const AddModal = ({
   info,
   updated,
   setUpdate,
-  setAddtoggle,
   setPlaceArr,
 }) => {
-  const dispatch = useDispatch();
   const textRef = useRef();
   const [attachment, setAttachment] = useState();
   const [textarea, setTextArea] = useState(updated?.contents);
 
-  console.log(updated.uuid);
   const submitHandler = (e) => {
     e.preventDefault();
 
     const contents = textRef.current.value;
-    if (attachment == undefined) {
-      setAttachment("");
-    }
-    console.log(attachment);
+    // if (attachment == undefined) {
+    //   setAttachment("");
+    // }
+    // console.log(attachment);
     const image = attachment;
     const uuid = uid();
     const obj = {
@@ -47,15 +42,29 @@ const AddModal = ({
     setIsSearching(false);
   };
   const updateHandler = () => {
-    const contents = textRef.current.value;
-    const image = attachment;
-    if (attachment == undefined) {
+    console.log(updated);
+    let image;
+    if (attachment === undefined) {
+      image = "";
       setAttachment("");
     }
+    if (!!updated.imageUrl && attachment === undefined) {
+      image = updated.imageUrl;
+    }
+    const contents = textRef.current.value;
+
+    // if (!!attachment) {
+    //   console.log("사진에 뭐가가 있다");
+    //   setAttachment((prev) => {
+    //     console.log(prev);
+    //     return prev;
+    //   });
+    // }
     const obj = {
       place: updated?.place,
       contents: contents,
-      imageUrl: image,
+
+      imageUrl: attachment ? attachment : image,
       uuid: updated.uuid,
     };
 
@@ -87,6 +96,7 @@ const AddModal = ({
       const result = finishedEvent.currentTarget.result;
       setAttachment(() => result);
     };
+
     reader.readAsDataURL(theFile);
   };
   const cancelBtn = () => {
@@ -155,6 +165,9 @@ const Form = styled.form`
     resize: none;
     border: none;
     border: 1px solid #fdcb6e;
+    &:focus {
+      outline-color: #fdcb6e;
+    }
   }
   .btn-upload {
     width: 100px;
@@ -180,8 +193,10 @@ const Form = styled.form`
   button {
     background-color: white;
     border-radius: 5px;
-
-    height: 30px;
+    font-weight: bold;
+    font-size: 18px;
+    width: 100px;
+    height: 40px;
     border: 2px solid #fdcb6e;
     margin-left: 10px;
     &:hover {

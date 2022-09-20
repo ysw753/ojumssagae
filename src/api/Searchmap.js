@@ -1,21 +1,14 @@
 import styled from "styled-components";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import AddModal from "../components/AddModal";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  deletedata,
-  fetchdata,
-  initdata,
-  savedata,
-} from "../redux/kakaomapSlice";
-import { onValue, ref, remove, update } from "firebase/database";
+
+import { onValue, ref, remove } from "firebase/database";
 import { db } from "../shared/firebase";
 const { kakao } = window;
 
 const SearchMap = () => {
   console.log("계속 렌더링됨");
-  const dispatch = useDispatch();
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
@@ -23,45 +16,48 @@ const SearchMap = () => {
 
   const [updated, setUpdate] = useState([]);
 
-  const [delstate, setDelstate] = useState();
-
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const inputRef = useRef();
   const [place, setPlace] = useState();
 
   const [isSearching, setIsSearching] = useState(false);
 
   const [selectedMarker, setSeleteMarker] = useState(false);
   const [inputstate, setInputState] = useState("");
-  const [addtoggle, setAddtoggle] = useState(false);
-  // const placeArr = useSelector((state) => {
-  //   console.log("store호출");
-  //   return state.place.value;
-  // });
+  const [gomymapstate, setgomtmapstate] = useState(false);
   const [placeArr, setPlaceArr] = useState([]);
 
   const inputChange = (e) => {
     setInputState(e.currentTarget.value);
   };
   const search = (e) => {
+    if (inputstate == "") return;
     setPlace(inputstate);
 
     setIsSearching(true);
     setInputState("");
   };
+  const gomymap = () => {
+    setIsSearching(false);
+    setgomtmapstate((prev) => prev);
+  };
   const clickHandler = (marker) => {
     setInfo(marker);
     setIsOpen(true);
   };
-
+  const closeInfo = () => {
+    setIsOpen(false);
+    setIsOpenModal(false);
+  };
+  const closeCustom = () => {
+    setIsOpenModal(false);
+    setSeleteMarker(null);
+  };
   const recordHandler = (marker) => {
     setIsOpenModal(true);
   };
 
   const deleteBtn = (marker) => {
-    setDelstate(marker);
-    //dispatch(deletedata(marker));
     remove(ref(db, `/${marker.uuid}`));
 
     const updatedPlaceArr = placeArr.filter((i) => i.uuid !== marker.uuid);
@@ -77,20 +73,15 @@ const SearchMap = () => {
     onValue(ref(db), (snapshot) => {
       const data = snapshot.val();
       console.log(data);
-      //const tmpArr = [];
       if (data !== null) {
-        const arr = Object.values(data).map(
-          (place) => {
-            return place.placeData;
-          }
-
-          // dispatch(savedata(plAace.placeData));
-        );
+        const arr = Object.values(data).map((place) => {
+          return place.placeData;
+        });
         console.log(arr);
         setPlaceArr(arr);
       }
     });
-  }, []);
+  }, [gomymapstate]);
   useEffect(() => {
     if (!map) return;
     const ps = new kakao.maps.services.Places();
@@ -124,14 +115,33 @@ const SearchMap = () => {
 
   return (
     <>
+      <Section>
+        <Header>나의흔적</Header>
+        <SearchSection>
+          <p>가본곳을 찾아볼까요?</p>
+          <SearchInput>
+            <input onChange={inputChange} value={inputstate} />
+            {isSearching ? (
+              <button type="button" onClick={gomymap}>
+                내 지도 가기
+              </button>
+            ) : (
+              <button type="submit" onClick={search}>
+                찾기
+              </button>
+            )}
+          </SearchInput>
+        </SearchSection>
+      </Section>
       <Map // 로드뷰를 표시할 Container
         center={{
           lat: 37.48492,
           lng: 126.971036,
         }}
         style={{
-          width: "100%",
-          height: "500px",
+          width: "90%",
+          margin: "auto",
+          height: "550px",
         }}
         level={3}
         onCreate={setMap}
@@ -139,7 +149,7 @@ const SearchMap = () => {
         {isSearching &&
           markers.map((marker) => (
             <MapMarker
-              style={{ border: "none" }}
+              style={{ minWidth: "200px" }}
               key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
               position={marker.position}
               onClick={() => clickHandler(marker)}
@@ -148,7 +158,7 @@ const SearchMap = () => {
               {/* MapMarker의 자식을 넣어줌으로 해당 자식이 InfoWindow로 만들어지게 합니다 */}
               {/* 인포윈도우에 표출될 내용으로 HTML 문자열이나 React Component가 가능합니다 */}
               {info && info.position.lat === marker.position.lat && isOpen && (
-                <InfoBox style={{ minWidth: "150px", border: "none" }}>
+                <InfoBox style={{ minWidth: "200px", border: "none" }}>
                   <img
                     alt="close"
                     width="14"
@@ -160,7 +170,8 @@ const SearchMap = () => {
                       top: "5px",
                       cursor: "pointer",
                     }}
-                    onClick={() => setIsOpen(false)}
+                    onClick={closeInfo}
+                    // onClick={() => setIsOpen(false)}
                   />
                   <div style={{ padding: "5px", color: "#000" }}>
                     {marker.content}
@@ -174,7 +185,6 @@ const SearchMap = () => {
         {!isSearching &&
           placeArr.map((place, index) => (
             <>
-              {console.log(place.uuid)}
               <MapMarker
                 style={{ border: "none" }}
                 key={`${place.uuid}`}
@@ -193,7 +203,16 @@ const SearchMap = () => {
                 {selectedMarker &&
                   selectedMarker.place.content === place.place.content && (
                     <Custom>
-                      <div style={{ color: "#000" }}>{place.place.content}</div>
+                      <p
+                        style={{
+                          color: "#000",
+                          fontWeight: "bold",
+                          fontSize: "24px",
+                          margin: "8px",
+                        }}
+                      >
+                        {place.place.content}
+                      </p>
                       <img
                         alt="close"
                         width="14"
@@ -205,19 +224,21 @@ const SearchMap = () => {
                           top: "5px",
                           cursor: "pointer",
                         }}
-                        onClick={() => setSeleteMarker(null)}
+                        onClick={closeCustom}
+                        // onClick={() => setSeleteMarker(null)}
                       />
                       {place.imageUrl && (
                         <img
                           style={{
-                            width: "150px",
-                            height: "100px",
+                            width: "100%",
+                            height: "40%",
+                            objectFit: "cover",
                           }}
                           src={place.imageUrl}
                         />
                       )}
 
-                      <p>{place.contents}</p>
+                      <CustomContents>{place.contents}</CustomContents>
                       <button
                         className="DelBtn"
                         onClick={() => deleteBtn(place)}
@@ -243,33 +264,56 @@ const SearchMap = () => {
             info={info}
             updated={updated}
             setUpdate={setUpdate}
-            setAddtoggle={setAddtoggle}
             setPlaceArr={setPlaceArr}
           />
         )}
       </Map>
-      <SearchInput>
-        <input onChange={inputChange} value={inputstate} />
-        <button type="submit" onClick={search}>
-          찾기
-        </button>
-      </SearchInput>
+      {/* <Section>
+        <h2>가본곳을 찾아볼까요?</h2>
+        <SearchInput>
+          <input onChange={inputChange} value={inputstate} />
+          {isSearching ? (
+            <button type="button" onClick={gomymap}>
+              내 지도 가기
+            </button>
+          ) : (
+            <button type="submit" onClick={search}>
+              찾기
+            </button>
+          )}
+        </SearchInput>
+      </Section> */}
     </>
   );
 };
 export default SearchMap;
-
+const Header = styled.div`
+  padding: 20px;
+  font-size: 48px;
+  font-weight: bold;
+  text-align: center;
+`;
+const Section = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+const SearchSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+`;
 const Custom = styled.div`
   width: 300px;
   height: 400px;
   background-color: white;
-  border: none;
-  border: 2px solid #fdcb6e;
-  border-radius: 5px;
+
   position: relative;
   button {
     position: absolute;
-
+    font-size: 18px;
+    font-family: Dongle;
     background-color: #ffeaa7;
     border: none;
     border-radius: 5px;
@@ -289,6 +333,16 @@ const Custom = styled.div`
     left: 50px;
   }
 `;
+const CustomContents = styled.div`
+  height: 180px;
+  color: #353535;
+  font-size: 20px;
+  font-family: Dongle;
+  overflow: scroll;
+  textoverflow: clip;
+  overflow-x: hidden;
+`;
+
 const SearchInput = styled.div`
   display: flex;
   justify-content: left;
@@ -297,9 +351,14 @@ const SearchInput = styled.div`
     width: 300px;
     height: 30px;
     border: none;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #fdcb6e;
+    &:focus {
+      outline-color: #fdcb6e;
+    }
   }
+
   button {
+    font-size: 22px;
     width: 100px;
     background-color: #ffeaa7;
     border: none;

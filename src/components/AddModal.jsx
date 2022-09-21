@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { db } from "../shared/firebase";
 import { uid } from "uid";
@@ -12,20 +12,27 @@ const AddModal = ({
   setPlaceArr,
 }) => {
   const textRef = useRef();
-  const [attachment, setAttachment] = useState();
+  //const [attachment, setAttachment] = useState();
+  const [attachment, setAttachment] = useState([]);
   const [textarea, setTextArea] = useState(updated?.contents);
+  const [getPropImg, setGetPropImg] = useState([]);
+
+  useEffect(() => {
+    if (updated.imageUrl === undefined) {
+      setGetPropImg([]);
+    } else {
+      setGetPropImg(updated.imageUrl);
+    }
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
     const contents = textRef.current.value;
-    // if (attachment == undefined) {
-    //   setAttachment("");
-    // }
-    // console.log(attachment);
+
     const image = attachment;
     const uuid = uid();
-    const obj = {
+    const placeData = {
       place: info,
       contents: contents,
       imageUrl: image,
@@ -33,38 +40,33 @@ const AddModal = ({
     };
 
     set(ref(db, `/${uuid}`), {
-      placeData: obj,
+      placeData,
     }).then(console.log("서버저장완료"));
     //dispatch(savedata(obj));
     //setAddtoggle((prev) => !prev);
-    setPlaceArr((prev) => [...prev, obj]);
+    setPlaceArr((prev) => [...prev, placeData]);
     setIsOpenModal(false);
     setIsSearching(false);
   };
+  const onClearGetPropImg = () => {
+    setGetPropImg([]);
+  };
   const updateHandler = () => {
-    console.log(updated);
-    let image;
-    if (attachment === undefined) {
-      image = "";
-      setAttachment("");
+    let image = [];
+    if (attachment.length === 0) {
+      image = [];
+      setAttachment([]);
     }
-    if (!!updated.imageUrl && attachment === undefined) {
+    if (attachment.length === 0 && getPropImg.length !== 0) {
       image = updated.imageUrl;
     }
     const contents = textRef.current.value;
 
-    // if (!!attachment) {
-    //   console.log("사진에 뭐가가 있다");
-    //   setAttachment((prev) => {
-    //     console.log(prev);
-    //     return prev;
-    //   });
-    // }
     const obj = {
       place: updated?.place,
       contents: contents,
 
-      imageUrl: attachment ? attachment : image,
+      imageUrl: attachment.length !== 0 ? attachment : image,
       uuid: updated.uuid,
     };
 
@@ -75,9 +77,7 @@ const AddModal = ({
     setIsOpenModal(false);
     setUpdate(() => []);
     setPlaceArr((prev) => {
-      console.log(prev);
       const arr = prev.map((i) => {
-        console.log(i);
         if (i.uuid === updated.uuid) {
           i.placeData = obj;
           return i;
@@ -85,19 +85,37 @@ const AddModal = ({
           return i;
         }
       });
-      console.log(arr);
       return arr;
     });
   };
-  const onFileChange = (event) => {
-    const theFile = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = (finishedEvent) => {
-      const result = finishedEvent.currentTarget.result;
-      setAttachment(() => result);
-    };
+  // const onFileChange = (event) => {
+  //   const theFile = event.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onloadend = (finishedEvent) => {
+  //     const result = finishedEvent.currentTarget.result;
+  //     setAttachment(() => result);
+  //   };
 
-    reader.readAsDataURL(theFile);
+  //   reader.readAsDataURL(theFile);
+  // };
+  const onFileChange = (event) => {
+    const fileArr = event.target.files;
+
+    let fileURLs = [];
+
+    let file;
+    let filesLength = fileArr.length > 5 ? 5 : fileArr.length;
+
+    for (let i = 0; i < filesLength; i++) {
+      file = fileArr[i];
+
+      let reader = new FileReader();
+      reader.onload = () => {
+        fileURLs[i] = reader.result;
+        setAttachment([...fileURLs]);
+      };
+      reader.readAsDataURL(file);
+    }
   };
   const cancelBtn = () => {
     setIsOpenModal(false);
@@ -108,7 +126,7 @@ const AddModal = ({
   };
 
   const onClearAttachment = () => {
-    setAttachment(() => null);
+    setAttachment(() => []);
   };
 
   return (
@@ -124,14 +142,36 @@ const AddModal = ({
           accept="image/*"
           name="file"
           id="file"
+          multiple
           onChange={onFileChange}
         />
-        {!!attachment && (
+        {attachment.length !== 0 && (
+          <ThumBox>
+            {attachment.map((attach) => (
+              <img src={attach} width="50px" height="50px" alt="x" />
+            ))}
+
+            <button onClick={onClearAttachment}>Clear</button>
+          </ThumBox>
+        )}
+        {attachment.length === 0 && getPropImg.length !== 0 && (
+          <>
+            <ThumBox>
+              {getPropImg.map((i) => (
+                <img src={i} width="50px" height="50px" alt="x" />
+              ))}
+
+              <button onClick={onClearGetPropImg}>Clear</button>
+            </ThumBox>
+          </>
+        )}
+
+        {/* {!!attachment && (
           <ThumBox>
             <img src={attachment} width="50px" height="50px" />
             <button onClick={onClearAttachment}>Clear</button>
           </ThumBox>
-        )}
+        )} */}
         <button type="button" onClick={cancelBtn}>
           취소하기
         </button>
@@ -160,7 +200,7 @@ const Form = styled.form`
   textarea {
     width: 90%;
     margin-left: 10px;
-    height: 60%;
+    height: 50%;
     resize: none;
     border: none;
     border: 1px solid #fdcb6e;
@@ -209,10 +249,10 @@ const Form = styled.form`
   }
 `;
 const ThumBox = styled.div`
-  display: flex;
   align-items: center;
+  width: 300px;
   margin: 5px;
   button {
-    height: 20px;
+    height: 30px;
   }
 `;

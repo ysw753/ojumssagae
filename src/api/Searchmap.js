@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useEffect, useState } from "react";
 import AddModal from "../components/AddModal";
-
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { onValue, ref, remove } from "firebase/database";
 import { db } from "../shared/firebase";
 const { kakao } = window;
 
 const SearchMap = () => {
-  console.log("계속 렌더링됨");
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
@@ -62,22 +63,21 @@ const SearchMap = () => {
 
     const updatedPlaceArr = placeArr.filter((i) => i.uuid !== marker.uuid);
     setPlaceArr(updatedPlaceArr);
+    setIsOpenModal(false);
   };
   const updateBtn = (marker) => {
     setUpdate(marker);
     setIsOpenModal(true);
   };
   useEffect(() => {
-    console.log("다시옴");
-    console.log(placeArr);
     onValue(ref(db), (snapshot) => {
       const data = snapshot.val();
-      console.log(data);
+
       if (data !== null) {
         const arr = Object.values(data).map((place) => {
           return place.placeData;
         });
-        console.log(arr);
+
         setPlaceArr(arr);
       }
     });
@@ -113,6 +113,15 @@ const SearchMap = () => {
     });
   }, [map, place]);
 
+  const settings = {
+    arrows: false,
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   return (
     <>
       <Section>
@@ -141,7 +150,7 @@ const SearchMap = () => {
         style={{
           width: "90%",
           margin: "auto",
-          height: "550px",
+          height: "560px",
         }}
         level={3}
         onCreate={setMap}
@@ -225,9 +234,26 @@ const SearchMap = () => {
                           cursor: "pointer",
                         }}
                         onClick={closeCustom}
-                        // onClick={() => setSeleteMarker(null)}
                       />
+
                       {place.imageUrl && (
+                        <StyledSlider {...settings}>
+                          {place.imageUrl.map((image) => {
+                            return (
+                              <img
+                                style={{
+                                  width: "100%",
+                                  height: "40%",
+                                  objectFit: "cover",
+                                }}
+                                src={image}
+                              />
+                            );
+                          })}
+                        </StyledSlider>
+                      )}
+
+                      {/* {place.imageUrl && (
                         <img
                           style={{
                             width: "100%",
@@ -236,7 +262,7 @@ const SearchMap = () => {
                           }}
                           src={place.imageUrl}
                         />
-                      )}
+                      )} */}
 
                       <CustomContents>{place.contents}</CustomContents>
                       <button
@@ -298,6 +324,7 @@ const Section = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
+  min-width: 900px;
 `;
 const SearchSection = styled.div`
   display: flex;
@@ -308,12 +335,18 @@ const SearchSection = styled.div`
 `;
 const Custom = styled.div`
   width: 300px;
-  height: 450px;
+  height: 480px;
   background-color: white;
-
+  p {
+    padding: 0;
+    margin: 0;
+    height: 30px;
+  }
   position: relative;
   button {
     width: 40px;
+
+    padding: 0;
     position: absolute;
     font-size: 18px;
     font-family: Dongle;
@@ -329,16 +362,33 @@ const Custom = styled.div`
     }
   }
   .DelBtn {
-    bottom: 10px;
+    bottom: 5px;
   }
   .UpdateBtn {
-    bottom: 10px;
+    bottom: 5px;
     left: 50px;
   }
 `;
+const StyledSlider = styled(Slider)`
+  .slick-dots {
+    bottom: -30px;
+  }
+
+  .slick-list {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    img {
+      width: auto;
+      height: 200px;
+      object-fit: cover;
+    }
+  }
+`;
+
 const CustomContents = styled.div`
   padding: 0px 5px;
-  height: 160px;
+  height: 170px;
   color: #353535;
   font-size: 20px;
   font-family: Dongle;

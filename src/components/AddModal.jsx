@@ -132,6 +132,9 @@ const AddModal = ({
             <button onClick={onClearAttachment}>Clear</button>
           </ThumBox>
         )}
+        <button type="button" onClick={cancelBtn}>
+          취소하기
+        </button>
         {updated.length !== 0 ? (
           <button type="button" onClick={updateHandler}>
             수정하기
@@ -139,10 +142,6 @@ const AddModal = ({
         ) : (
           <button type="submit">저장하기</button>
         )}
-
-        <button type="button" onClick={cancelBtn}>
-          취소하기
-        </button>
       </Form>
     </>
   );
@@ -193,8 +192,8 @@ const Form = styled.form`
   button {
     background-color: white;
     border-radius: 5px;
-    font-weight: bold;
-    font-size: 18px;
+    font-family: Dongle;
+    font-size: 26px;
     width: 100px;
     height: 40px;
     border: 2px solid #fdcb6e;

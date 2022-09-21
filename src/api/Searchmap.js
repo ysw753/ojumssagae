@@ -207,7 +207,7 @@ const SearchMap = () => {
                         style={{
                           color: "#000",
                           fontWeight: "bold",
-                          fontSize: "24px",
+                          fontSize: "28px",
                           margin: "8px",
                         }}
                       >
@@ -291,6 +291,7 @@ const Header = styled.div`
   padding: 20px;
   font-size: 48px;
   font-weight: bold;
+  font-family: Dongle;
   text-align: center;
 `;
 const Section = styled.div`
@@ -302,15 +303,17 @@ const SearchSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: Dongle;
   font-size: 36px;
 `;
 const Custom = styled.div`
   width: 300px;
-  height: 400px;
+  height: 450px;
   background-color: white;
 
   position: relative;
   button {
+    width: 40px;
     position: absolute;
     font-size: 18px;
     font-family: Dongle;
@@ -334,13 +337,21 @@ const Custom = styled.div`
   }
 `;
 const CustomContents = styled.div`
-  height: 180px;
+  padding: 0px 5px;
+  height: 160px;
   color: #353535;
   font-size: 20px;
   font-family: Dongle;
   overflow: scroll;
   textoverflow: clip;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: #ccc;
+  }
 `;
 
 const SearchInput = styled.div`
@@ -359,6 +370,7 @@ const SearchInput = styled.div`
 
   button {
     font-size: 22px;
+    font-family: Dongle;
     width: 100px;
     background-color: #ffeaa7;
     border: none;

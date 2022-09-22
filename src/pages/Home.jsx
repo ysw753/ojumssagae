@@ -20,5 +20,5 @@ const Home = () => {
 export default Home;
 const All = styled.div`
   background-color: #fafaf9;
-  height: 110vh;
+  height: 120vh;
 `;

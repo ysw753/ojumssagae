@@ -12,7 +12,6 @@ const AddModal = ({
   setPlaceArr,
 }) => {
   const textRef = useRef();
-  //const [attachment, setAttachment] = useState();
   const [attachment, setAttachment] = useState([]);
   const [textarea, setTextArea] = useState(updated?.contents);
   const [getPropImg, setGetPropImg] = useState([]);
@@ -34,7 +33,7 @@ const AddModal = ({
     const uuid = uid();
     const placeData = {
       place: info,
-      contents: contents,
+      contents: contents.replace(/(?:\r\n|\r|\n)/g, "<br/>"),
       imageUrl: image,
       uuid: uuid,
     };
@@ -42,8 +41,7 @@ const AddModal = ({
     set(ref(db, `/${uuid}`), {
       placeData,
     }).then(console.log("서버저장완료"));
-    //dispatch(savedata(obj));
-    //setAddtoggle((prev) => !prev);
+
     setPlaceArr((prev) => [...prev, placeData]);
     setIsOpenModal(false);
     setIsSearching(false);
@@ -64,7 +62,7 @@ const AddModal = ({
 
     const obj = {
       place: updated?.place,
-      contents: contents,
+      contents: contents.replace(/(?:\r\n|\r|\n)/g, "<br/>"),
 
       imageUrl: attachment.length !== 0 ? attachment : image,
       uuid: updated.uuid,
@@ -88,16 +86,7 @@ const AddModal = ({
       return arr;
     });
   };
-  // const onFileChange = (event) => {
-  //   const theFile = event.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onloadend = (finishedEvent) => {
-  //     const result = finishedEvent.currentTarget.result;
-  //     setAttachment(() => result);
-  //   };
 
-  //   reader.readAsDataURL(theFile);
-  // };
   const onFileChange = (event) => {
     const fileArr = event.target.files;
 
@@ -133,7 +122,14 @@ const AddModal = ({
     <>
       <Form onSubmit={submitHandler}>
         <h1>추억을 저장해주세요!</h1>
-        <textarea ref={textRef} onChange={changeHandler} value={textarea} />
+        <textarea
+          rows="2"
+          cols="20"
+          wrap="hard"
+          ref={textRef}
+          onChange={changeHandler}
+          value={textarea.split("<br/>").join("\n")}
+        />
         <label htmlFor="file">
           <div className="btn-upload">사진올리기</div>
         </label>
@@ -166,12 +162,6 @@ const AddModal = ({
           </>
         )}
 
-        {/* {!!attachment && (
-          <ThumBox>
-            <img src={attachment} width="50px" height="50px" />
-            <button onClick={onClearAttachment}>Clear</button>
-          </ThumBox>
-        )} */}
         <button type="button" onClick={cancelBtn}>
           취소하기
         </button>

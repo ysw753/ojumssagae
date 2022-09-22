@@ -150,7 +150,7 @@ const SearchMap = () => {
         style={{
           width: "90%",
           margin: "auto",
-          height: "560px",
+          height: "90vh",
         }}
         level={3}
         onCreate={setMap}
@@ -253,18 +253,16 @@ const SearchMap = () => {
                         </StyledSlider>
                       )}
 
-                      {/* {place.imageUrl && (
-                        <img
-                          style={{
-                            width: "100%",
-                            height: "40%",
-                            objectFit: "cover",
-                          }}
-                          src={place.imageUrl}
-                        />
-                      )} */}
-
-                      <CustomContents>{place.contents}</CustomContents>
+                      <CustomContents>
+                        {place.contents.split("<br/>").map((line) => {
+                          return (
+                            <span>
+                              {line}
+                              <br />
+                            </span>
+                          );
+                        })}
+                      </CustomContents>
                       <button
                         className="DelBtn"
                         onClick={() => deleteBtn(place)}
@@ -294,21 +292,6 @@ const SearchMap = () => {
           />
         )}
       </Map>
-      {/* <Section>
-        <h2>가본곳을 찾아볼까요?</h2>
-        <SearchInput>
-          <input onChange={inputChange} value={inputstate} />
-          {isSearching ? (
-            <button type="button" onClick={gomymap}>
-              내 지도 가기
-            </button>
-          ) : (
-            <button type="submit" onClick={search}>
-              찾기
-            </button>
-          )}
-        </SearchInput>
-      </Section> */}
     </>
   );
 };
@@ -392,6 +375,7 @@ const CustomContents = styled.div`
   color: #353535;
   font-size: 20px;
   font-family: Dongle;
+
   overflow: scroll;
   textoverflow: clip;
   overflow-x: hidden;

@@ -128,7 +128,7 @@ const AddModal = ({
           wrap="hard"
           ref={textRef}
           onChange={changeHandler}
-          value={textarea.split("<br/>").join("\n")}
+          value={textarea ? textarea.split("<br/>").join("\n") : null}
         />
         <label htmlFor="file">
           <div className="btn-upload">사진올리기</div>

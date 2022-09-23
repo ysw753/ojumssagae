@@ -54,6 +54,10 @@ const SearchMap = () => {
     setIsOpenModal(false);
     setSeleteMarker(null);
   };
+  const infoClick = (place) => {
+    setSeleteMarker(place);
+    setIsOpenModal(false);
+  };
   const recordHandler = (marker) => {
     setIsOpenModal(true);
   };
@@ -207,7 +211,8 @@ const SearchMap = () => {
                   }, // 마커이미지의 크기입니다
                 }}
                 title={place.place.content} // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-                onClick={() => setSeleteMarker(place)}
+                // onClick={() => setSeleteMarker(place)}
+                onClick={() => infoClick(place)}
               >
                 {selectedMarker &&
                   selectedMarker.place.content === place.place.content && (

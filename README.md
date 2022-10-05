@@ -1,7 +1,11 @@
-# ojumssagae
+<div align="center">
+
+<h1>OJUMSSAGAE</h1>
+ </div>
+
  <br> <br> <br>
 <div align="center">
- <h2>:📸 내가간곳을 기록으로 남기자 , 오줌싸개📸:</h2>
+ <h2>🌏 내가간곳을 기록으로 남기자 , 오줌싸개🌏</h2>
  
  <br> <br> <br>
 </div>

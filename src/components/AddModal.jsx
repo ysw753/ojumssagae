@@ -108,6 +108,7 @@ const AddModal = ({
   };
   const cancelBtn = () => {
     setIsOpenModal(false);
+
     setUpdate(() => []);
   };
   const changeHandler = (e) => {
@@ -128,7 +129,7 @@ const AddModal = ({
           wrap="hard"
           ref={textRef}
           onChange={changeHandler}
-          value={textarea ? textarea.split("<br/>").join("\n") : null}
+          value={textarea ? textarea.split("<br/>").join("\n") : ""}
         />
         <label htmlFor="file">
           <div className="btn-upload">사진올리기</div>

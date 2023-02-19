@@ -28,6 +28,7 @@ const SearchMap = () => {
   const [gomymapstate, setgomtmapstate] = useState(false);
   const [placeArr, setPlaceArr] = useState([]);
 
+  console.log(placeArr);
   const inputChange = (e) => {
     setInputState(e.currentTarget.value);
   };
@@ -51,6 +52,7 @@ const SearchMap = () => {
     setIsOpenModal(false);
   };
   const closeCustom = () => {
+    setUpdate(() => []);
     setIsOpenModal(false);
     setSeleteMarker(null);
   };
@@ -67,6 +69,7 @@ const SearchMap = () => {
 
     const updatedPlaceArr = placeArr.filter((i) => i.uuid !== marker.uuid);
     setPlaceArr(updatedPlaceArr);
+
     setIsOpenModal(false);
   };
   const updateBtn = (marker) => {
@@ -81,7 +84,6 @@ const SearchMap = () => {
         const arr = Object.values(data).map((place) => {
           return place.placeData;
         });
-
         setPlaceArr(arr);
       }
     });
@@ -148,8 +150,8 @@ const SearchMap = () => {
       </Section>
       <Map // 로드뷰를 표시할 Container
         center={{
-          lat: 37.48492,
-          lng: 126.971036,
+          lat: 37.504449,
+          lng: 127.04886,
         }}
         style={{
           width: "90%",

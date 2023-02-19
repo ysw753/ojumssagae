@@ -10,7 +10,6 @@ function App() {
       <Routes>
         {/* <Route path="/" element={<MainPage />} /> */}
         <Route path="/" element={<Home />} />
-        <h1>23.01.20</h1>
       </Routes>
     </>
   );
